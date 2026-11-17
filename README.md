@@ -6,11 +6,14 @@
 > Cherry Studio、OpenAI SDK…）填上地址和 Key 即可使用。
 
 ```
-第三方客户端 ──HTTPS──> Caddy(域名, 自动证书) ──> standalone(127.0.0.1:18900)
-                                                      ├─ /v1/*   推理接口（公网）
-                                                      ├─ 管理后台  仅回环 / 可选 IP 白名单
+公网客户端 ──HTTPS──> Caddy(域名, 自动证书) ──> standalone 管理面(127.0.0.1:39808)
+局域网客户端 ──LAN Key──> LAN 中继(0.0.0.0:39809, 只放行 /v1/*) ──┘
                                                       └─ 出网 ──> 家宽HTTP代理 ──> 上游
 ```
+
+默认端口 **39808**（standalone 主服务，仅回环）；`--lan` 同时开 **39809 局域网
+中继**（绑 0.0.0.0，独立 LAN Key，只转发 `/v1/*` 推理路径——管理面永不暴露）。
+LAN Key 在管理后台设置页查看/轮换。
 
 ## 一分钟安装
 
@@ -25,7 +28,8 @@ curl -fsSL https://raw.githubusercontent.com/<你的用户名>/ofm-gateway/main/
 
 - **API 地址**：`https://api.example.com/v1`
 - **API Key**（文件：`/var/lib/ofm-gateway/settings.json` 的 `forwardKey`）
-- **管理后台**：`http://127.0.0.1:18900/`（隧道访问）或 `https://admin.api.example.com/`（带 `--admin-allow` 时）
+- **管理后台**：`http://127.0.0.1:39808/`（隧道访问）或 `https://admin.api.example.com/`（带 `--admin-allow` 时）
+- **局域网推理**：`http://<服务器内网IP>:39809/v1`（需 LAN Key，管理页设置里查看）
 
 验证：
 
@@ -52,8 +56,8 @@ openSUSE、Arch（需 systemd + root）。
 
 - **默认（SSH 隧道，最安全）**：
   ```bash
-  ssh -L 18900:127.0.0.1:18900 root@<服务器>
-  # 浏览器打开 http://127.0.0.1:18900/ （一次性登录链接在首次启动日志里）
+  ssh -L 39808:127.0.0.1:39808 root@<服务器>
+  # 浏览器打开 http://127.0.0.1:39808/ （一次性登录链接在首次启动日志里）
   ```
 - **可选（`--admin-allow <你的IP>`）**：公网 `https://admin.<域名>/`，仅该 IP 可访问。
 

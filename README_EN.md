@@ -7,11 +7,13 @@
 > (ChatBox, NextChat, Cherry Studio, OpenAI SDK, …).
 
 ```
-client ──HTTPS──> Caddy(domain, auto TLS) ──> standalone(127.0.0.1:18900)
-                                                ├─ /v1/*   inference (public)
-                                                ├─ admin   loopback / IP-allowlisted
-                                                └─ egress ──> residential proxy ──> upstream
+public client ──HTTPS──> Caddy(domain, auto TLS) ──> standalone admin (127.0.0.1:39808)
+LAN client ──LAN key──> LAN relay (0.0.0.0:39809, /v1/* only) ──┘
+                                                   └─ egress ──> residential proxy ──> upstream
 ```
+
+Default port **39808** (loopback-only admin plane); `--lan` also binds **39809**
+on 0.0.0.0 as a LAN inference relay (separate LAN key, `/v1/*` only).
 
 ## One-minute install
 

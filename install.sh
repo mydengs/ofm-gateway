@@ -9,7 +9,9 @@
 #   --domain <域名>       公网域名（必填）。需已解析 A 记录到本机公网 IP。
 #   --email <邮箱>        Let's Encrypt 通知邮箱（可选）。
 #   --proxy <地址>        初始家宽/HTTP 代理，如 http://user:pass@us.xxx.io:3000
-#   --port <端口>         standalone 监听端口（默认 18900，仅回环）。
+#   --port <端口>         standalone 监听端口（默认 39808）。
+#                         独立服务默认绑 0.0.0.0（LAN 中继，独立 LAN Key，
+#                         只放行 /v1/* 推理路径；管理面仍只回环）。
 #   --admin-allow <IP>    可选：把管理后台反代到 admin.<域名>，且只放行该来源 IP。
 #                         不传则管理后台只监听回环，通过 SSH 隧道访问。
 #   --rotate <分钟>      强制轮换间隔，默认 10（0 = 只撞墙换，不主动换）。
@@ -27,7 +29,7 @@
 set -euo pipefail
 
 # ── 参数 ─────────────────────────────────────────────────────────────────────
-DOMAIN=""; ADMIN_EMAIL=""; PROXY_URL=""; APP_PORT="18900"; ADMIN_ALLOW=""
+DOMAIN=""; ADMIN_EMAIL=""; PROXY_URL=""; APP_PORT="39808"; ADMIN_ALLOW=""
 ROTATE_MIN=10; ASSUME_YES=false
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -172,7 +174,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/env node $APP_DIR/upstream/packages/standalone/cli.mjs --port $APP_PORT --data-dir $DATA_DIR
+ExecStart=/usr/bin/env node $APP_DIR/upstream/packages/standalone/cli.mjs --port $APP_PORT --lan --data-dir $DATA_DIR
 Environment=OFM_HOME=$DATA_DIR
 Environment=PATH=/usr/local/bin:/usr/bin:/bin
 Restart=always
@@ -295,7 +297,7 @@ green "==================== 安装完成 ===================="
 echo "API 地址      : https://$DOMAIN/v1"
 echo "API Key       : $KEY"
 echo "              （密钥文件: $DATA_DIR/settings.json 的 forwardKey 字段）"
-echo "管理后台      : http://127.0.0.1:$APP_PORT/  （仅本机）"
+echo "管理后台      : http://127.0.0.1:$APP_PORT/  （仅本机回环；局域网客户端用 LAN Key 走 /v1/*）"
 if [ -n "$ADMIN_ALLOW" ]; then
   echo "公网管理页    : https://admin.$DOMAIN/ （仅 $ADMIN_ALLOW 可访问）"
 else
