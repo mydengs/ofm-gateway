@@ -1,5 +1,4 @@
 # ── 发布包忽略清单 ─────────────────────────────────────────────
-upstream/            # 官方上游克隆（用户安装时自动 git clone，不进发布包）
 *.tar.gz
 *.tgz
 .env
@@ -8,6 +7,5 @@ upstream/            # 官方上游克隆（用户安装时自动 git clone，�
 node_modules/
 .DS_Store
 
-# ── 保留 ──
-!install.sh
-!ofm-watch.sh
+# 注意：upstream/ 已【本地化】进发布包（剥离 .git 与 Windows exe，约 57M），
+# 不要在此忽略它——这正是"拷到离线服务器也能装"的关键。

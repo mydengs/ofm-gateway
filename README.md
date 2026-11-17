@@ -80,7 +80,7 @@ ofm-gateway/
 │   ├── BUSINESS.zh.md      # 业务逻辑（额度/限流/轮换的真相）
 │   ├── BUSINESS.en.md
 │   └── DEVELOPMENT.zh.md   # 开发说明（本地调试/二次开发）
-└── upstream/           # 安装时 git clone（官方仓库，勿手动改）
+└── upstream/           # 本地化上游代码（官方 MIT，随包分发，勿手动改）
 ```
 
 ## 安全须知

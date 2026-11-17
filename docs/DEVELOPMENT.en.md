@@ -3,8 +3,7 @@
 ## Local setup
 
 ```bash
-git clone https://github.com/<you>/ofm-gateway.git && cd ofm-gateway
-git clone --depth 1 https://github.com/Ebony-Vinyl/dsh-our-free-model.git upstream
+git clone https://github.com/<you>/ofm-gateway.git && cd ofm-gateway  # upstream/ included
 node upstream/packages/standalone/cli.mjs --port 18900 --data-dir /tmp/ofm-dev
 curl -s http://127.0.0.1:18900/health   # {"ok":true,...}
 ```
@@ -56,8 +55,9 @@ git remote add origin git@github.com:<you>/ofm-gateway.git
 git push -u origin main && git tag v1.0.0 && git push origin v1.0.0
 ```
 
-`upstream/` is intentionally excluded from the release repo (installed via
-clone at install time; upstream is MIT by its own author).
+`upstream/` is **included** (localized: .git and Windows-only binaries
+stripped, ~57M, Linux runtime complete) so installs work fully offline;
+fallback to git clone only if missing. Upstream remains MIT by its author.
 
 ## Known limits
 

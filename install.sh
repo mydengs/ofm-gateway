@@ -141,17 +141,24 @@ fi
 command -v caddy >/dev/null || die "Caddy 安装失败，请手动安装后重跑"
 info "Caddy: $(caddy version)"
 
-# ── 5. 项目代码 ──────────────────────────────────────────────────────────────
+# ── 5. 项目代码（本地化优先：发布包自带 upstream/；缺失才 clone 兜底）────────
 APP_DIR=/opt/ofm-gateway
 UPSTREAM_URL="${OFM_UPSTREAM_URL:-https://github.com/Ebony-Vinyl/dsh-our-free-model.git}"
-if [ ! -d "$APP_DIR/upstream/.git" ]; then
-  info "克隆上游仓库（浅克隆）..."
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
+if [ -d "$APP_DIR/upstream/packages/standalone" ]; then
+  info "上游代码已存在，跳过"
+elif [ -d "$SCRIPT_DIR/upstream/packages/standalone" ]; then
+  info "从发布包复制本地化上游（无需联网 GitHub）..."
+  mkdir -p "$APP_DIR"
+  cp -a "$SCRIPT_DIR/upstream" "$APP_DIR/upstream"
+else
+  warn "发布包未携带 upstream/，回退到 git clone（需要 GitHub 可达）"
   command -v git >/dev/null || pkg_install git
   git clone --depth 1 "$UPSTREAM_URL" "$APP_DIR/upstream" || die "git clone 失败"
-else
-  info "上游仓库已存在，跳过克隆（升级: cd $APP_DIR/upstream && git pull）"
 fi
 # standalone 零 npm 依赖即可运行（已验证），无需 pnpm install —— 这是选它的核心原因之一。
+# 上游代码本地化说明：发布包的 upstream/ 已剥离 .git 与 Windows 专用二进制，
+# 保留 Linux 运行所需的 src/vendor(channel-pack) 全部内容，与官方仓库等价（略 57M）。
 
 # ── 6. systemd 服务 ─────────────────────────────────────────────────────────
 STATE_DIR=/etc/ofm-gateway; mkdir -p "$STATE_DIR"

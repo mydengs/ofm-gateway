@@ -3,10 +3,9 @@
 ## 本地开发环境搭建
 
 ```bash
-# 1. 克隆（发布包不含 upstream，本地开发需要完整仓库）
+# 1. 克隆（发布包已含本地化 upstream/，无需额外拉官方仓库）
 git clone https://github.com/<你的用户名>/ofm-gateway.git
 cd ofm-gateway
-git clone --depth 1 https://github.com/Ebony-Vinyl/dsh-our-free-model.git upstream
 
 # 2. standalone 零依赖直跑（Node ≥22.19）
 node upstream/packages/standalone/cli.mjs --port 18900 --data-dir /tmp/ofm-dev
@@ -121,8 +120,10 @@ git tag v1.0.0 && git push origin v1.0.0
 curl -fsSL https://raw.githubusercontent.com/<你>/ofm-gateway/main/install.sh | sudo bash -s -- ...
 ```
 
-> 注意：发布包里**不包含 upstream/**（.gitignore 已排除），安装时自动
-> clone 官方仓库——这是有意的：上游 MIT 版权归属其作者，本项目只做外壳。
+> 注意：发布包里**包含本地化的 upstream/**（官方仓库剥离 .git 与 Windows
+> 专用二进制，保留 Linux 运行所需的全部代码与 vendor 元数据，约 57M），
+> 安装时直接复制、完全离线可装；本地缺失才回退 git clone 兜底。
+> 上游版权归其作者（MIT），随包分发符合其许可。
 
 ## 已知限制
 

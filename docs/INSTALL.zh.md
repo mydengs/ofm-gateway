@@ -39,8 +39,9 @@ curl -fsSL <脚本地址>/install.sh | sudo bash -s -- \
 4. **Bun**：GitHub 官方二进制（x64/arm64 自动识别）。失败不阻断——standalone
    在 Bun 缺失时自动降级 `node` 传输（推理仍可用，见 DEVELOPMENT 文档说明）。
 5. **Caddy**：官方源安装（cloudsmith/copr/aur 按发行版选路）。
-6. **项目代码**：`git clone --depth 1` 上游到 `/opt/ofm-gateway/upstream`。
-   **注意：standalone 零 npm 依赖，无需 pnpm install**（2 核小机无压力）。
+6. **项目代码**：**发布包自带本地化上游** `upstream/`（已剥离 .git 与 Windows exe，
+   约 57M），直接复制到 `/opt/ofm-gateway/upstream`；本地缺失时才回退 git clone。
+   完全离线可装。**standalone 零 npm 依赖，无需 pnpm install**（2 核小机无压力）。
 7. **systemd**：`ofm-gateway.service`（服务）+ `ofm-watch.timer`（看守，每分钟）。
 8. **Caddyfile**：域名 `/v1/*` 反代 + 自动证书 + 日志轮转。
 9. **防火墙**：ufw / firewalld 尽力放行 80/443。
@@ -50,7 +51,7 @@ curl -fsSL <脚本地址>/install.sh | sudo bash -s -- \
 
 ```
 /opt/ofm-gateway/
-├── upstream/                  # 官方仓库（git clone，可 pull 升级）
+├── upstream/                  # 本地化上游代码（官方 MIT，随包分发）
 │   └── packages/standalone/   # standalone 服务入口
 ├── ofm-watch.sh               # 轮换看守
 /etc/ofm-gateway/
