@@ -1,0 +1,35 @@
+MIT License
+
+Copyright (c) 2026 OFM Gateway contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+声明（重要）:
+
+本项目（OFM Gateway）是外壳/打包工程：它不包含也不修改上游模型服务代码。
+上游 Our Free Model（https://github.com/Ebony-Vinyl/dsh-our-free-model）
+按其自身 MIT 许可发布，版权与责任归其作者。
+
+本项目对上游免费车道的任何使用，均受上游服务条款约束：
+- 免费额度由上游单方面提供，可能随时限流、收费或下线；
+- 免费 ≠ 私有：prompt 可能被上游记录（Kilo 池明确声明），请勿发送敏感数据；
+- 使用住宅/机房代理访问上游时，请遵守代理服务商与上游双方条款；
+- 因违反上游政策导致的限流、封禁等后果由使用者自行承担。

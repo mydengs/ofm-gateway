@@ -1,0 +1,13 @@
+# ── 发布包忽略清单 ─────────────────────────────────────────────
+upstream/            # 官方上游克隆（用户安装时自动 git clone，不进发布包）
+*.tar.gz
+*.tgz
+.env
+*.key
+*.pem
+node_modules/
+.DS_Store
+
+# ── 保留 ──
+!install.sh
+!ofm-watch.sh
