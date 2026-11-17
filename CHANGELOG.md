@@ -2,6 +2,15 @@
 
 格式基于 Keep a Changelog，版本号遵循语义化版本。
 
+## [1.0.1] - 2026-11-17
+
+### 修复
+- `install.sh` 新增 `--upgrade`：发布包本地化模式下覆盖 `/opt/ofm-gateway/upstream/`（旧版保留为
+  `upstream.bak`）并重启服务。原先打印的 `cd /opt/ofm-gateway/upstream && git pull` 在本地化部署下
+  必然失败（该目录由 `cp -a` 产生，无 `.git`）——升级提示改指向 `--upgrade`，README/CHANGELOG 同步。
+- `ofm-admin.mjs` 别名校验修正：原 `!alias.includes('/') === false` 与注释意图相反（实际是"含 `/`
+  才通过"），改为白名单校验 `[A-Za-z0-9._:-]+`；同时拒绝覆盖已存在的别名（避免静默改写目标）。
+
 ## [1.0.0] - 2026-11-17
 
 ### 新增
@@ -18,4 +27,5 @@
 - standalone 零 npm 依赖直跑（Node 22 即可）—— 2 核 1G 小机也能装，
   不会重演插件链的前端构建压垮问题。
 - 代理（家宽动态 IP）统一管理：管理后台设置页可改，看守只兜底。
-- 版本升级：`cd /opt/ofm-gateway/upstream && git pull && systemctl restart`。
+- 版本升级：`bash install.sh --domain <域名> --upgrade --yes`（覆盖 upstream/，旧版留 `upstream.bak`）；
+  若 upstream/ 是 git clone 得来则 `cd /opt/ofm-gateway/upstream && git pull && systemctl restart` 亦可。

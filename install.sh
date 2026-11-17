@@ -15,6 +15,8 @@
 #   --admin-allow <IP>    可选：把管理后台反代到 admin.<域名>，且只放行该来源 IP。
 #                         不传则管理后台只监听回环，通过 SSH 隧道访问。
 #   --rotate <分钟>      强制轮换间隔，默认 10（0 = 只撞墙换，不主动换）。
+#   --upgrade             强制用本发布包内的 upstream/ 覆盖 /opt/ofm-gateway/upstream
+#                         （升级入口；不带此参数时已存在的 upstream/ 不动）。
 #   --yes                 跳过所有交互确认。
 #
 # 产物:
@@ -30,7 +32,7 @@ set -euo pipefail
 
 # ── 参数 ─────────────────────────────────────────────────────────────────────
 DOMAIN=""; ADMIN_EMAIL=""; PROXY_URL=""; APP_PORT="39808"; ADMIN_ALLOW=""
-ROTATE_MIN=10; ASSUME_YES=false
+ROTATE_MIN=10; ASSUME_YES=false; FORCE_UPGRADE=false
 while [ $# -gt 0 ]; do
   case "$1" in
     --domain) DOMAIN="${2:?--domain 需要值}"; shift 2 ;;
@@ -39,8 +41,9 @@ while [ $# -gt 0 ]; do
     --port) APP_PORT="${2:?}"; shift 2 ;;
     --admin-allow) ADMIN_ALLOW="${2:?}"; shift 2 ;;
     --rotate) ROTATE_MIN="${2:?}"; shift 2 ;;
+    --upgrade) FORCE_UPGRADE=true; shift ;;
     --yes) ASSUME_YES=true; shift ;;
-    -h|--help) sed -n '2,30p' "$0"; exit 0 ;;
+    -h|--help) sed -n '2,32p' "$0"; exit 0 ;;
     *) echo "未知参数: $1（--help 查看用法）" >&2; exit 1 ;;
   esac
 done
@@ -147,9 +150,13 @@ info "Caddy: $(caddy version)"
 APP_DIR=/opt/ofm-gateway
 UPSTREAM_URL="${OFM_UPSTREAM_URL:-https://github.com/Ebony-Vinyl/dsh-our-free-model.git}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
-if [ -d "$APP_DIR/upstream/packages/standalone" ]; then
-  info "上游代码已存在，跳过"
+if [ -d "$APP_DIR/upstream/packages/standalone" ] && [ "$FORCE_UPGRADE" != true ]; then
+  info "上游代码已存在，跳过（要覆盖升级请加 --upgrade）"
 elif [ -d "$SCRIPT_DIR/upstream/packages/standalone" ]; then
+  if [ "$FORCE_UPGRADE" = true ] && [ -d "$APP_DIR/upstream" ]; then
+    info "升级模式：备份并覆盖 $APP_DIR/upstream ..."
+    rm -rf "$APP_DIR/upstream.bak"; mv "$APP_DIR/upstream" "$APP_DIR/upstream.bak"
+  fi
   info "从发布包复制本地化上游（无需联网 GitHub）..."
   mkdir -p "$APP_DIR"
   cp -a "$SCRIPT_DIR/upstream" "$APP_DIR/upstream"
@@ -337,5 +344,5 @@ echo "验证          : curl https://$DOMAIN/v1/models -H \"Authorization: Beare
 echo "管理网关      : Token=$STATE_DIR/admin.token（/admin/models/test-all 批量测试、/admin/aliases 别名、/admin/dashboard 看板）"
 echo "服务/日志     : systemctl status ofm-gateway / journalctl -u ofm-gateway -f"
 echo "轮换日志      : cat $STATE_DIR/rotate_log"
-echo "升级          : cd $APP_DIR/upstream && git pull && systemctl restart ofm-gateway"
+echo "升级          : bash install.sh --domain $DOMAIN --upgrade --yes（覆盖 upstream/ 后自动重启，旧版留 upstream.bak）"
 echo "=================================================="

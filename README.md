@@ -88,7 +88,8 @@ curl http://127.0.0.1:18902/admin/dashboard -H "Authorization: Bearer $(cat /etc
 systemctl status ofm-gateway          # 服务状态
 journalctl -u ofm-gateway -f          # 实时日志
 cat /etc/ofm-gateway/rotate_log       # IP 轮换轨迹
-cd /opt/ofm-gateway/upstream && git pull && systemctl restart ofm-gateway   # 升级
+cd /opt/ofm-gateway/upstream && git pull && systemctl restart ofm-gateway   # 升级（仅当 upstream/ 是 git clone 得来）
+bash install.sh --domain <域名> --upgrade --yes                            # 升级（发布包本地化模式，旧版留 upstream.bak）
 ```
 
 ## 项目结构

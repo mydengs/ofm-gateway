@@ -218,11 +218,12 @@ const server = http.createServer(async (req, res) => {
       if (p === '/admin/aliases' && method === 'POST') {
         const body = JSON.parse((await readBody(req)) || '{}')
         const alias = String(body.alias || '').trim(), target = String(body.target || '').trim()
-        if (!alias || !target || !alias.includes('/') === false) {
-          // alias 不允许含 '/'（与 provider/model 命名空间一致）；target 必须是真实模型 id
-          if (!alias || !target) return send(res, 400, { error: 'alias and target required' })
+        if (!alias || !target) return send(res, 400, { error: 'alias and target required' })
+        // alias 不允许含 '/'（与 provider/model 命名空间一致），也不允许空白/控制字符
+        if (!/^[A-Za-z0-9._:-]+$/.test(alias)) {
+          return send(res, 400, { error: 'alias must match [A-Za-z0-9._:-]+ and must not contain "/"' })
         }
-        if (alias.includes('/')) return send(res, 400, { error: 'alias must not contain "/"' })
+        if (aliases[alias]) return send(res, 400, { error: `alias already exists: ${alias}（先 DELETE 再建，或直接用新名字）` })
         const { json } = await upstreamJson('GET', '/v1/models')
         const valid = (json?.data || []).some(r => r.id === target && !r['x_ofm_alias_of'])
         if (!valid) return send(res, 400, { error: `unknown target model: ${target}` })

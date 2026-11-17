@@ -112,4 +112,4 @@ rm -rf /opt/ofm-gateway /var/lib/ofm-gateway /etc/ofm-gateway
 | 推理报 free quota window open | 撞额度墙 | 看守应在 1~2 分钟内自动换 IP；手动：后台设置页换代理地址 + 重启服务 |
 | 管理页打不开（隧道模式） | 端口转发未建 | `ssh -L 39808:127.0.0.1:39808 root@<服务器>` |
 | Caddy 证书签发失败 | 80 端口被占/安全组没放行 | 检查 `ss -tlnp \| grep :80`、云安全组 |
-| 升级后行为变化 | 上游指纹规则更新 | 正常：`git pull && systemctl restart` 即可跟随 |
+| 升级后行为变化 | 上游指纹规则更新 | 正常：`bash install.sh --domain <域名> --upgrade --yes` 跟随（旧版留 upstream.bak） |
