@@ -125,6 +125,22 @@ curl -fsSL https://raw.githubusercontent.com/<你>/ofm-gateway/main/install.sh |
 > 安装时直接复制、完全离线可装；本地缺失才回退 git clone 兜底。
 > 上游版权归其作者（MIT），随包分发符合其许可。
 
+## ofm-admin（薄管理网关）
+
+`ofm-admin.mjs`（Node 单文件，随包分发）提供 standalone 没有的三项能力：
+
+- `POST /admin/models/test-all` — 批量测试全部模型（并发 4，逐模型真实推理
+  `max_tokens=4`，返回逐模型 OK/失败原因）。
+- `/admin/aliases` — 别名 CRUD。别名合并进 `/v1/models` 返回（`x_ofm_alias_of`
+  标注目标），推理请求中 `model` 字段命中别名时重写为真实 ID 再透传。
+- `GET /admin/dashboard` — 出口 IP（经代理查 ipinfo）、rotate_log 轨迹、
+  stats.json 累计 token 聚合。
+
+设计约束：**不碰上游代码**（升级零冲突）；所有内部调用带 standalone 的
+forwardKey（惰性读取 settings.json，容忍 admin 先于 standalone 启动）。
+鉴权：`/admin/*` 需要 Bearer token（install.sh 随机生成存 `/etc/ofm-gateway/admin.token`）；
+推理透传不强制（standalone 自己校验 forwardKey/LAN Key）。
+
 ## 已知限制
 
 1. 看守的断路器清窗依赖 `systemctl restart`（进程内存态），本地非 systemd

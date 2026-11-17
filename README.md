@@ -51,6 +51,27 @@ openSUSE、Arch（需 systemd + root）。
 | 自动 HTTPS | Caddy 自动申请续期 Let's Encrypt 证书 |
 | 账号渠道 | 十个免费账号渠道（可选，见上游文档） |
 | 聚合渠道 | 76 家 provider 注册表，填 Key 即用 |
+| **批量测试**（ofm-admin） | 一键并发测试全部模型（并发 4，逐模型真实推理），输出 ✅/❌+原因 |
+| **模型别名**（ofm-admin） | 自定义模型 ID 映射（如 `my-ds` → `deepseek-v4.1-flash-free`），合并进 `/v1/models`，调用自动重写，客户端无感 |
+| **订阅看板**（ofm-admin） | 当前出口 IP、撞墙/轮换轨迹、累计 token 消耗 |
+
+## ofm-admin 管理网关（批量测试 / 别名 / 看板）
+
+独立薄服务（127.0.0.1:18902，systemd `ofm-admin`，随 install.sh 部署），Token 在
+`/etc/ofm-gateway/admin.token`。经 `--admin-allow` 的 admin 子域访问，或直接隧道：
+
+```bash
+# 一键批量测试全部模型（并发 4，约 15-60 秒）
+curl -X POST http://127.0.0.1:18902/admin/models/test-all -H "Authorization: Bearer $(cat /etc/ofm-gateway/admin.token)"
+
+# 别名映射（第三方客户端无感：清单合并 + 调用自动重写）
+curl -X POST http://127.0.0.1:18902/admin/aliases -H "Authorization: Bearer $(cat /etc/ofm-gateway/admin.token)" \
+  -H 'Content-Type: application/json' -d '{"alias":"my-ds","target":"deepseek-v4.1-flash-free"}'
+# 之后 https://域名/v1/models 里会出现 my-ds，调用它等于调用目标模型
+
+# 订阅看板（出口 IP / 轮换轨迹 / 累计消耗）
+curl http://127.0.0.1:18902/admin/dashboard -H "Authorization: Bearer $(cat /etc/ofm-gateway/admin.token)"
+```
 
 ## 管理后台怎么访问
 

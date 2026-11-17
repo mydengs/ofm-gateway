@@ -208,10 +208,34 @@ AccuracySec=5
 WantedBy=timers.target
 EOF
 
+# ofm-admin：批量测试 + 别名映射 + 模型清单聚合 + 订阅看板（薄网关，127.0.0.1:18902）
+ADMIN_TOKEN=$(head -c 24 /dev/urandom | base64 | tr -dc 'A-Za-z0-9' | head -c 24)
+echo "$ADMIN_TOKEN" > "$STATE_DIR/admin.token"; chmod 600 "$STATE_DIR/admin.token"
+cat > /etc/systemd/system/ofm-admin.service <<EOF2
+[Unit]
+Description=OFM Admin thin gateway (batch test / aliases / dashboard)
+After=ofm-gateway.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env node $APP_DIR/ofm-admin.mjs --port 18902 --token $ADMIN_TOKEN
+Environment=OFM_HOME=$DATA_DIR
+Environment=OFM_ADMIN_STATE=$STATE_DIR
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF2
 systemctl daemon-reload
 systemctl enable --now ofm-gateway.service
 systemctl enable --now ofm-watch.timer
-info "systemd 服务已启用: ofm-gateway / ofm-watch.timer"
+if [ -f /etc/systemd/system/ofm-admin.service ]; then systemctl enable --now ofm-admin.service; fi
+info "systemd 服务已启用: ofm-gateway / ofm-watch.timer / ofm-admin"
+
+# ── 6b. 部署 ofm-admin（随包携带）────────────────────────────────────────────
+if [ -f "$SCRIPT_DIR/ofm-admin.mjs" ]; then install -m 755 "$SCRIPT_DIR/ofm-admin.mjs" "$APP_DIR/ofm-admin.mjs"; fi
 
 # ── 7. 轮换看守 ─────────────────────────────────────────────────────────────
 # ofm-watch.sh 与本 install.sh 同目录分发（仓库自带），此处确保可执行并写状态。
@@ -246,12 +270,18 @@ touch "$CADDYFILE" 2>/dev/null || true
   echo "}"
   if [ -n "$ADMIN_ALLOW" ]; then
     echo
-    echo "# 管理后台（仅此来源 IP 可访问）"
+    echo "# 管理网关（仅此来源 IP 可访问）"
     echo "admin.$DOMAIN {"
     echo "    @blocked not remote_ip $ADMIN_ALLOW"
     echo "    respond @blocked \"forbidden\" 403"
-    echo "    reverse_proxy 127.0.0.1:$APP_PORT"
-    echo "    flush_interval -1"
+    echo "    # /admin/* → ofm-admin 薄网关；其余（standalone 原后台）→ $APP_PORT"
+    echo "    @ofmadmin path /admin/*"
+    echo "    handle @ofmadmin {"
+    echo "        reverse_proxy 127.0.0.1:18902"
+    echo "    }"
+    echo "    handle {"
+    echo "        reverse_proxy 127.0.0.1:$APP_PORT"
+    echo "    }"
     echo "}"
   fi
   [ -n "$ADMIN_EMAIL" ] && echo && echo "email $ADMIN_EMAIL"
@@ -304,6 +334,7 @@ else
   echo "隧道访问管理页: ssh -L $APP_PORT:127.0.0.1:$APP_PORT root@<服务器>  然后浏览器开 http://127.0.0.1:$APP_PORT/"
 fi
 echo "验证          : curl https://$DOMAIN/v1/models -H \"Authorization: Bearer $KEY\""
+echo "管理网关      : Token=$STATE_DIR/admin.token（/admin/models/test-all 批量测试、/admin/aliases 别名、/admin/dashboard 看板）"
 echo "服务/日志     : systemctl status ofm-gateway / journalctl -u ofm-gateway -f"
 echo "轮换日志      : cat $STATE_DIR/rotate_log"
 echo "升级          : cd $APP_DIR/upstream && git pull && systemctl restart ofm-gateway"
