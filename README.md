@@ -68,6 +68,8 @@ curl -X POST http://127.0.0.1:18902/admin/models/test-all -H "Authorization: Bea
 curl -X POST http://127.0.0.1:18902/admin/aliases -H "Authorization: Bearer $(cat /etc/ofm-gateway/admin.token)" \
   -H 'Content-Type: application/json' -d '{"alias":"my-ds","target":"deepseek-v4.1-flash-free"}'
 # 之后 https://域名/v1/models 里会出现 my-ds，调用它等于调用目标模型
+# 重复 POST 同名 alias = 幂等改目标（返回 replaced:true + previous）；
+# 想防止误改就加 "strict":true —— 已存在时返回 409 并回显 current。
 
 # 订阅看板（出口 IP / 轮换轨迹 / 累计消耗）
 curl http://127.0.0.1:18902/admin/dashboard -H "Authorization: Bearer $(cat /etc/ofm-gateway/admin.token)"

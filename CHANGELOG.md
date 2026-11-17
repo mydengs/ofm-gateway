@@ -9,7 +9,9 @@
   `upstream.bak`）并重启服务。原先打印的 `cd /opt/ofm-gateway/upstream && git pull` 在本地化部署下
   必然失败（该目录由 `cp -a` 产生，无 `.git`）——升级提示改指向 `--upgrade`，README/CHANGELOG 同步。
 - `ofm-admin.mjs` 别名校验修正：原 `!alias.includes('/') === false` 与注释意图相反（实际是"含 `/`
-  才通过"），改为白名单校验 `[A-Za-z0-9._:-]+`；同时拒绝覆盖已存在的别名（避免静默改写目标）。
+  才通过"），改为白名单校验 `[A-Za-z0-9._:-]+`。
+  `POST /admin/aliases` 改为幂等 upsert：重复 POST 同名 alias 直接改目标并返回
+  `{replaced:true, previous}`；传 `"strict":true` 时已存在则返回 409（防误改）。
 
 ## [1.0.0] - 2026-11-17
 

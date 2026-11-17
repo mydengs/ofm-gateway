@@ -223,13 +223,18 @@ const server = http.createServer(async (req, res) => {
         if (!/^[A-Za-z0-9._:-]+$/.test(alias)) {
           return send(res, 400, { error: 'alias must match [A-Za-z0-9._:-]+ and must not contain "/"' })
         }
-        if (aliases[alias]) return send(res, 400, { error: `alias already exists: ${alias}（先 DELETE 再建，或直接用新名字）` })
         const { json } = await upstreamJson('GET', '/v1/models')
         const valid = (json?.data || []).some(r => r.id === target && !r['x_ofm_alias_of'])
         if (!valid) return send(res, 400, { error: `unknown target model: ${target}` })
+        // 默认幂等覆盖（重复 POST 等于改目标）；strict=true 时已存在则拒绝，防误改
+        const existed = Object.prototype.hasOwnProperty.call(aliases, alias)
+        const prev = existed ? aliases[alias] : null
+        if (existed && (body.strict === true || body.strict === 'true')) {
+          return send(res, 409, { error: `alias already exists: ${alias}`, current: prev })
+        }
         aliases[alias] = target
         saveAliases()
-        return send(res, 200, { ok: true, alias, target })
+        return send(res, 200, existed ? { ok: true, alias, target, replaced: true, previous: prev } : { ok: true, alias, target })
       }
       if (p.startsWith('/admin/aliases/') && method === 'DELETE') {
         const alias = decodeURIComponent(p.slice('/admin/aliases/'.length))
