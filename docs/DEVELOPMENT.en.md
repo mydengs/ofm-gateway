@@ -4,11 +4,11 @@
 
 ```bash
 git clone https://github.com/<you>/ofm-gateway.git && cd ofm-gateway  # upstream/ included
-node upstream/packages/standalone/cli.mjs --port 18900 --data-dir /tmp/ofm-dev
-curl -s http://127.0.0.1:18900/health   # {"ok":true,...}
+node upstream/packages/standalone/cli.mjs --port 39808 --data-dir /tmp/ofm-dev
+curl -s http://127.0.0.1:39808/health   # {"ok":true,...}
 ```
 
-Admin one-time link prints in startup logs (`http://127.0.0.1:18900/#login=…`).
+Admin one-time link prints in startup logs (`http://127.0.0.1:39808/#login=…`).
 
 ## Debugging
 
@@ -20,7 +20,7 @@ curl -s --proxy "$PROXY" -H "Authorization: Bearer public" https://opencode.ai/i
 
 # inference via gateway (recommended — handles stream/fingerprint):
 KEY=$(python3 -c "import json;print(json.load(open('/tmp/ofm-dev/settings.json'))['forwardKey'])")
-curl -s http://127.0.0.1:18900/v1/chat/completions \
+curl -s http://127.0.0.1:39808/v1/chat/completions \
   -H "Authorization: Bearer $KEY" -H 'Content-Type: application/json' \
   -d '{"model":"our-free-model/deepseek-v4.1-flash-free","messages":[{"role":"user","content":"hi"}],"max_tokens":8}'
 
@@ -39,7 +39,7 @@ Pin bun path with `OUR_FREE_MODEL_BUN=...`.
 - Rotation policy: edit `ofm-watch.sh` header (`GAP`, `MAX_TRIES`) and the
   trigger block (consecutive-failure threshold).
 - Public admin: append an `admin.<domain>` Caddy site with
-  `@blocked not remote_ip <IP>` + `reverse_proxy 127.0.0.1:18900`.
+  `@blocked not remote_ip <IP>` + `reverse_proxy 127.0.0.1:39808`.
 
 ## Test matrix before release
 

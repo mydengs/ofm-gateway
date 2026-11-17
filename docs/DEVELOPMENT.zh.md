@@ -8,14 +8,14 @@ git clone https://github.com/<你的用户名>/ofm-gateway.git
 cd ofm-gateway
 
 # 2. standalone 零依赖直跑（Node ≥22.19）
-node upstream/packages/standalone/cli.mjs --port 18900 --data-dir /tmp/ofm-dev
+node upstream/packages/standalone/cli.mjs --port 39808 --data-dir /tmp/ofm-dev
 
 # 3. 冒烟测试
-curl -s http://127.0.0.1:18900/health
+curl -s http://127.0.0.1:39808/health
 # {"ok":true,"service":"our-free-model-standalone",...}
 
 # 4. 第一次拿一次性登录链接（管理后台）
-#    启动日志里打印 http://127.0.0.1:18900/#login=<one-time-token>
+#    启动日志里打印 http://127.0.0.1:39808/#login=<one-time-token>
 ```
 
 ## 本地跑看守（不接 systemd 调试）
@@ -46,7 +46,7 @@ curl -s --proxy "$PROXY" -H "Authorization: Bearer public" \
 
 ```bash
 KEY=$(python3 -c "import json;print(json.load(open('/tmp/ofm-dev/settings.json'))['forwardKey'])")
-curl -s http://127.0.0.1:18900/v1/chat/completions \
+curl -s http://127.0.0.1:39808/v1/chat/completions \
   -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
   -d '{"model":"our-free-model/deepseek-v4.1-flash-free","messages":[{"role":"user","content":"hi"}],"max_tokens":8}'
 ```
@@ -90,7 +90,7 @@ install.sh 的 `--admin-allow` 生成 `admin.<域名>` 子域 + IP 白名单。�
 admin.api.example.com {
     @blocked not remote_ip <你的IP>
     respond @blocked "forbidden" 403
-    reverse_proxy 127.0.0.1:18900
+    reverse_proxy 127.0.0.1:39808
 }
 ```
 

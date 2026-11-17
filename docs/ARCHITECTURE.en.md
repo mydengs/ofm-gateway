@@ -3,7 +3,7 @@
 ## Components
 
 ```
-clients ──HTTPS──> Caddy (auto TLS, /v1/* only) ──> standalone (127.0.0.1:18900)
+clients ──HTTPS──> Caddy (auto TLS, /v1/* only) ──> standalone (127.0.0.1:39808)
                                                      ├─ /v1/* OpenAI-compatible
                                                      ├─ admin console (loopback)
                                                      └─ egress → residential proxy (sid sticky) → OpenCode/Kilo

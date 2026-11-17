@@ -26,7 +26,7 @@ curl -fsSL <脚本地址>/install.sh | sudo bash -s -- \
 | `--domain <域名>` | （必填） | 公网域名，需已解析到本机 |
 | `--email <邮箱>` | 无 | Let's Encrypt 到期通知 |
 | `--proxy <地址>` | 无 | 初始家宽代理地址 |
-| `--port <端口>` | 18900 | standalone 回环监听端口 |
+| `--port <端口>` | 39808 | standalone 回环监听端口 |
 | `--admin-allow <IP>` | 无 | 开公网管理子域并只放行该 IP |
 | `--rotate <分钟>` | 10 | 看守强制轮换间隔（0=只撞墙换） |
 | `--yes` | 交互 | 跳过确认 |
@@ -79,8 +79,8 @@ systemctl restart ofm-gateway
 隧道方式（推荐）：
 
 ```bash
-ssh -L 18900:127.0.0.1:18900 root@<服务器>
-# 浏览器：http://127.0.0.1:18900/
+ssh -L 39808:127.0.0.1:39808 root@<服务器>
+# 浏览器：http://127.0.0.1:39808/
 ```
 
 ## 验证清单
@@ -110,6 +110,6 @@ rm -rf /opt/ofm-gateway /var/lib/ofm-gateway /etc/ofm-gateway
 |---|---|---|
 | 推理报「需要本机 Bun」 | Bun 安装失败 | `curl -fsSL https://bun.sh/install \| bash` 后重启服务 |
 | 推理报 free quota window open | 撞额度墙 | 看守应在 1~2 分钟内自动换 IP；手动：后台设置页换代理地址 + 重启服务 |
-| 管理页打不开（隧道模式） | 端口转发未建 | `ssh -L 18900:127.0.0.1:18900 root@<服务器>` |
+| 管理页打不开（隧道模式） | 端口转发未建 | `ssh -L 39808:127.0.0.1:39808 root@<服务器>` |
 | Caddy 证书签发失败 | 80 端口被占/安全组没放行 | 检查 `ss -tlnp \| grep :80`、云安全组 |
 | 升级后行为变化 | 上游指纹规则更新 | 正常：`git pull && systemctl restart` 即可跟随 |

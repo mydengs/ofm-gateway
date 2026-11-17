@@ -18,7 +18,7 @@ curl -fsSL <url>/install.sh | sudo bash -s -- \
   --proxy "http://user:pass@us.yourproxy.io:3000" --yes
 ```
 
-All flags: `--domain` (required) `--email` `--proxy` `--port` (default 18900)
+All flags: `--domain` (required) `--email` `--proxy` `--port` (default 39808)
 `--admin-allow <IP>` `--rotate <min>` (default 10) `--yes`.
 
 ## What the installer does (10 stages)
@@ -49,8 +49,8 @@ curl -s https://api.example.com/v1/models -H "Authorization: Bearer <KEY>" | hea
 curl -s -o /dev/null -w "%{http_code}\n" https://api.example.com/v1/models   # expect 401
 ```
 
-Admin (default loopback): `ssh -L 18900:127.0.0.1:18900 root@<server>` then
-open `http://127.0.0.1:18900/` (one-time login link in first-start logs).
+Admin (default loopback): `ssh -L 39808:127.0.0.1:39808 root@<server>` then
+open `http://127.0.0.1:39808/` (one-time login link in first-start logs).
 
 ## Uninstall
 

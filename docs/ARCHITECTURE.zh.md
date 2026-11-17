@@ -11,14 +11,14 @@
  ┌────────────────────────────────────────────┐               │
  │ Caddy (systemd: caddy)                      │               │
  │  • 域名自动 Let's Encrypt 证书 + 自动续期     │               │
- │  • 只反代 /v1/* → 127.0.0.1:18900           │               │
+ │  • 只反代 /v1/* → 127.0.0.1:39808           │               │
  │  • 其它路径 404（管理面不暴露）               │               │
  │  • gzip / 流式 flush_interval -1            │               │
  └────────────────────┬───────────────────────┘               │
                       ▼                                        │
  ┌────────────────────────────────────────────┐               │
  │ standalone (node cli.mjs, systemd: ofm-gateway)              │
- │  • 端口 18900 仅回环                          │               │
+ │  • 端口 39808 仅回环                          │               │
  │  • /v1/* OpenAI 兼容: models/chat/responses/messages          │
  │  • 管理控制台: 请求记录/用量/设置/渠道/插件中心    │           │
  │  • API Key: forwardKey (settings.json)       │               │
@@ -40,7 +40,7 @@
 ## 数据流（一次对话请求）
 
 1. 客户端 `POST https://api.example.com/v1/chat/completions`（带 forwardKey）
-2. Caddy 终止 TLS，转发到 127.0.0.1:18900
+2. Caddy 终止 TLS，转发到 127.0.0.1:39808
 3. standalone 校验 Key → 按模型 id 选车道（`our-free-model/...` → OpenCode 免费车道）
 4. **请求整形**：注入官方系统提示词 + 13 件官方工具集 + `x-opencode-*` 指纹头，
    会话映射到稳定 session id（额度按会话计）
