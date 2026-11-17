@@ -49,5 +49,5 @@ No generation quota is consumed (stats are local; probes hit third-party echo).
 ## Risk boundaries
 
 Free ≠ private (prompts go upstream as-is; Kilo may log). Upstream rules
-evolve — standalone auto-follows via `git pull`. Residential proxy quality
+evolve — standalone auto-follows by re-running `install.sh --upgrade`. Residential proxy quality
 varies — consider a backup proxy. Usage subject to upstream & proxy ToS.

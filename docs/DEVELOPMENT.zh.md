@@ -4,7 +4,7 @@
 
 ```bash
 # 1. 克隆（发布包已含本地化 upstream/，无需额外拉官方仓库）
-git clone https://github.com/<你的用户名>/ofm-gateway.git
+git clone https://github.com/mydengs/ofm-gateway.git
 cd ofm-gateway
 
 # 2. standalone 零依赖直跑（Node ≥22.19）
@@ -65,8 +65,10 @@ curl -s http://127.0.0.1:39808/v1/chat/completions \
 
 ### 想改模型整形/指纹规则
 
-不要动本项目——改上游 `upstream/src/o2a/` 目录（opencode2api 的 JS 移植），
-然后 `git pull` 冲突时 rebase。上游每次官方客户端改版会同步（见上游
+不要动本项目——改上游 `upstream/src/o2a/` 目录（opencode2api 的 JS 移植）。
+本地修改的提交方式：在 `/opt/ofm-gateway` 里把 `upstream/` 当普通目录提交，
+之后升级用 `bash install.sh --upgrade`（会把旧版移到 `upstream.bak`，可用来
+`diff -r` 比对后 rebase 自己的改动）。上游每次官方客户端改版会同步（见上游
 `src/o2a/SYNC.md`）。
 
 ### 想加聚合渠道 / 账号渠道
@@ -107,7 +109,7 @@ admin.api.example.com {
 
 ```bash
 git init && git add . && git commit -m "feat: OFM Gateway 1.0.0"
-git remote add origin git@github.com:<你>/ofm-gateway.git
+git remote add origin git@github.com:mydengs/ofm-gateway.git
 git push -u origin main
 
 # 打 tag
@@ -117,7 +119,7 @@ git tag v1.0.0 && git push origin v1.0.0
 发布后用户一键安装：
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/<你>/ofm-gateway/main/install.sh | sudo bash -s -- ...
+curl -fsSL https://raw.githubusercontent.com/mydengs/ofm-gateway/main/install.sh | sudo bash -s -- ...
 ```
 
 > 注意：发布包里**包含本地化的 upstream/**（官方仓库剥离 .git 与 Windows

@@ -18,7 +18,7 @@ LAN Key 在管理后台设置页查看/轮换。
 ## 一分钟安装
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/<你的用户名>/ofm-gateway/main/install.sh \
+curl -fsSL https://raw.githubusercontent.com/mydengs/ofm-gateway/main/install.sh \
   | sudo bash -s -- --domain api.example.com \
       --proxy "http://user:pass@us.yourproxy.io:3000" \
       --yes

@@ -18,7 +18,7 @@ on 0.0.0.0 as a LAN inference relay (separate LAN key, `/v1/*` only).
 ## One-minute install
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/<you>/ofm-gateway/main/install.sh \
+curl -fsSL https://raw.githubusercontent.com/mydengs/ofm-gateway/main/install.sh \
   | sudo bash -s -- --domain api.example.com \
       --proxy "http://user:pass@us.yourproxy.io:3000" \
       --yes

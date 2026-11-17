@@ -3,7 +3,7 @@
 ## Local setup
 
 ```bash
-git clone https://github.com/<you>/ofm-gateway.git && cd ofm-gateway  # upstream/ included
+git clone https://github.com/mydengs/ofm-gateway.git && cd ofm-gateway  # upstream/ included
 node upstream/packages/standalone/cli.mjs --port 39808 --data-dir /tmp/ofm-dev
 curl -s http://127.0.0.1:39808/health   # {"ok":true,...}
 ```
@@ -51,7 +51,7 @@ forged stats.json.
 
 ```bash
 git init && git add . && git commit -m "feat: 1.0.0"
-git remote add origin git@github.com:<you>/ofm-gateway.git
+git remote add origin git@github.com:mydengs/ofm-gateway.git
 git push -u origin main && git tag v1.0.0 && git push origin v1.0.0
 ```
 

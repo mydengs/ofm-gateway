@@ -59,7 +59,7 @@
 | 依赖 | 需要完整 DSH 宿主 + 前端构建链（压垮 2 核机的原因） | **零 npm 依赖**，node 直跑 |
 | API 面 | 依赖 DSH 内核鉴权（cookie） | 独立 forwardKey，标准 Bearer |
 | 部署 | 绑死 profile 目录 | systemd 一个单元，任意机器 |
-| 升级 | 走插件管理器 | `git pull` + restart |
+| 升级 | 走插件管理器 | 重跑 `install.sh --upgrade` + restart |
 
 ### 为什么 Caddy 而不是 nginx
 
